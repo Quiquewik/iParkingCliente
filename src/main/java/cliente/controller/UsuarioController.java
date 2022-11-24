@@ -38,14 +38,12 @@ public class UsuarioController {
 
         //ResponseEntity<String> result =  restTemplate.exchange(GET_USUARIOS_URL, HttpMethod.GET, entity,  String.class)
         ResponseEntity<Usuario[]> mov =
-                restTemplate.getForEntity(
+                cliente.ClienteMain.restTemplate.getForEntity(
                         "http://services-movies/api/movies/",
                         Usuario[].class);
-        List<ResponseEntity<Usuario[]>> m = Collections.singletonList(mov);
 
-        return m;
+        return Collections.singletonList(mov);
     }
 
-    @Autowired
-    public RestTemplate restTemplate;
+
 }
