@@ -1,47 +1,45 @@
 package cliente.controller;
 
+import cliente.ClienteMain;
 import cliente.model.Usuario;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 public class UsuarioController {
-
-
+    Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     private static final String ADD_USUARIO_URL = "";
     private static final String GET_USUARIOS_URL = "http://localhost:8080/usuario/usuarios";
-    private static final String GET_USUARIO_BY_ID_URL = "";
-    private static final String GET_USUARIO_BY_DNI_URL = "";
+    private static final String GET_USUARIO_BY_ID_URL = "http://localhost:8080/usuario/usuario/";
+    private static final String GET_USUARIO_BY_DNI_URL = "http://localhost:8080/usuario/dni/"; // String dni
     private static final String UPDATE_USUARIO_URL = "";
     private static final String DELETE_USUARIO_URL = "";
 
     public UsuarioController() {
     }
 
-    public List<ResponseEntity<Usuario[]>> callGetUsuarios() {
 
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-//
-//        HttpEntity<String> entity = new HttpEntity<>("parameters",headers);
+    public Usuario[] callGetUsuarios() {
 
-        //ResponseEntity<String> result =  restTemplate.exchange(GET_USUARIOS_URL, HttpMethod.GET, entity,  String.class)
-        ResponseEntity<Usuario[]> mov =
+        ResponseEntity<Usuario[]> arrayUsuarioResponse =
                 cliente.ClienteMain.restTemplate.getForEntity(GET_USUARIOS_URL,
                         Usuario[].class);
+        logger.info(GET_USUARIOS_URL);
 
-        return Collections.singletonList(mov);
+        return arrayUsuarioResponse.getBody();
+    }
+
+    public Usuario callGetUsuarioById(String id) {
+        String urlEnvio = (GET_USUARIO_BY_ID_URL+id).trim();
+        logger.info(urlEnvio);
+
+        return ClienteMain.restTemplate.getForObject(urlEnvio, Usuario.class);
     }
 
 
