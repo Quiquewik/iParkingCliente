@@ -20,7 +20,7 @@ public class UsuarioController {
 
 
     private static final String ADD_USUARIO_URL = "";
-    private static final String GET_USUARIOS_URL = "http://localhost:8080/usuario/usuaros";
+    private static final String GET_USUARIOS_URL = "http://localhost:8080/usuario/usuarios";
     private static final String GET_USUARIO_BY_ID_URL = "";
     private static final String GET_USUARIO_BY_DNI_URL = "";
     private static final String UPDATE_USUARIO_URL = "";
@@ -38,8 +38,7 @@ public class UsuarioController {
 
         //ResponseEntity<String> result =  restTemplate.exchange(GET_USUARIOS_URL, HttpMethod.GET, entity,  String.class)
         ResponseEntity<Usuario[]> mov =
-                cliente.ClienteMain.restTemplate.getForEntity(
-                        "http://services-movies/api/movies/",
+                cliente.ClienteMain.restTemplate.getForEntity(GET_USUARIOS_URL,
                         Usuario[].class);
 
         return Collections.singletonList(mov);
