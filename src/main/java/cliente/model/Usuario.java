@@ -17,12 +17,15 @@ public class Usuario {
 
 	@Id
 	private String id;
+	@Indexed(unique = true)
 	private String nombreUsuario;
 	private String password;
+	@Indexed(unique = true)
 	private String dni;
 	private String nombre;
 	private String apellidos;
 	private String direccion;
+	@Indexed(unique = true)
 	private String correo;
 	private int	tipoUsuario;
 

@@ -10,7 +10,7 @@ public class ClienteMain {
     public static RestTemplate restTemplate = new RestTemplate();
     public static void main(String[] args) {
         UsuarioController usuarioController = new UsuarioController();
-        Usuario usuarioTest = new Usuario("quiquewik","1234","457830952B","enrique","santana","unacalle","pepe@123",1);
-        System.out.println(usuarioController.callAddUsuario(usuarioTest));
+        Usuario usuarioTest = new Usuario("pene","1234","33","falete","santana","unacalle","pepee@123",1);
+        System.out.println(usuarioController.callDeleteUsuarioByDni(usuarioTest.getDni()));
     }
 }
