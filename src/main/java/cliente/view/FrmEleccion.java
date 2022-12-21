@@ -1,81 +1,89 @@
 package cliente.view;
 
-import java.awt.EventQueue;
+import cliente.model.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.FlowLayout;
 
 public class FrmEleccion {
 
 	private JFrame frame;
+	private final Usuario user;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrmEleccion window = new FrmEleccion();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+	Logger logger = LoggerFactory.getLogger(FrmEleccion.class);
+
+	public FrmEleccion(Usuario user) {
+		createForm();
+		this.user = user;
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				} else {
+					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				}
 			}
 		});
-	}
+		frame.setVisible(true);
 
-	/**
-	 * Create the application.
-	 */
-	public FrmEleccion() {
-		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void createForm() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setResizable(false);
+		frame.setBounds(100, 100, 450, 223);
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		frame.getContentPane().add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new GridLayout(3, 1, 0, 0));
+		panel_1.setLayout(null);
 		
 		JLabel lblSeleccion = new JLabel("Selecciona la pantalla a la que quieres ir:");
+		lblSeleccion.setBounds(2, 2, 430, 57);
 		lblSeleccion.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblSeleccion);
 		
+		JPanel panel = new JPanel();
+		panel.setBounds(12, 61, 412, 76);
+		panel_1.add(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
 		JButton btnDatosUsuario = new JButton("Perfil de usuario");
-		btnDatosUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//TODO
-			}
+		btnDatosUsuario.addActionListener(e -> {
+			logger.info(user.toString());
+			new FrmPerfil(user,false);
+			frame.dispose();
 		});
-		panel_1.add(btnDatosUsuario);
+		btnDatosUsuario.setPreferredSize(new Dimension(190, 50));
+		panel.add(btnDatosUsuario, BorderLayout.WEST);
 		
 		JButton btnAparcamientos = new JButton("Aparcamientos");
-		btnAparcamientos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
+		btnAparcamientos.addActionListener(e -> {
+			//TODO Abrir aparcamientos
 		});
-		panel_1.add(btnAparcamientos);
+		btnAparcamientos.setPreferredSize(new Dimension(190, 50));
+		panel.add(btnAparcamientos, BorderLayout.EAST);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.getContentPane().add(menuBar, BorderLayout.NORTH);
@@ -84,9 +92,11 @@ public class FrmEleccion {
 		menuBar.add(MenuSesion);
 		
 		JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión y salir");
-		itemCerrarSesion.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//TODO
+		itemCerrarSesion.addActionListener(e -> {
+			if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.dispose();
 			}
 		});
 		MenuSesion.add(itemCerrarSesion);
@@ -95,12 +105,11 @@ public class FrmEleccion {
 		menuBar.add(MenuAyuda);
 		
 		JMenuItem itemAyuda = new JMenuItem("Ayuda");
-		itemAyuda.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
+		itemAyuda.addActionListener(e -> {
+			//TODO
 		});
 		MenuAyuda.add(itemAyuda);
+
 	}
 
 }

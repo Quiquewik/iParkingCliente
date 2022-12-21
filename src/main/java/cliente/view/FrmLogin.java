@@ -44,6 +44,7 @@ public class FrmLogin extends JFrame {
 
 		frame.setTitle("Logging");
 		frame.setBounds(100, 100, 300, 232);
+		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -84,10 +85,12 @@ public class FrmLogin extends JFrame {
 					if (usuario.getPassword().equals(new String(passwordField.getPassword()))){
 						switch (usuario.getTipoUsuario()){
 							case 1://Admin
-								//TODO abrir admin
+								new FrmEleccionAdmin();
+								frame.dispose();
 								break;
 							case 2://Normal User
-								//TODO abrir user normal
+								new FrmEleccion(usuario);
+								frame.dispose();
 								break;
 							default:
 								JOptionPane.showMessageDialog(null,"Tipo de usuario desconocido.");
@@ -121,6 +124,7 @@ public class FrmLogin extends JFrame {
 		
 		txtDni = new JTextField();
 		txtDni.setBounds(145, 24, 118, 26);
+		txtDni.setPreferredSize(new Dimension(50,25));
 		txtDni.setHorizontalAlignment(SwingConstants.CENTER);
 		PanelDatos.add(txtDni);
 		txtDni.setColumns(9);

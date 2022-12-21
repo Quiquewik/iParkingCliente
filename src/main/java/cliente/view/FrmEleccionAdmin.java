@@ -1,5 +1,7 @@
 package cliente.view;
 
+import cliente.model.Usuario;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -13,41 +15,25 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class FrmAdmin {
+public class FrmEleccionAdmin {
 
 	private JFrame frame;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrmAdmin window = new FrmAdmin();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	private Usuario user;
 	/**
 	 * Create the application.
 	 */
-	public FrmAdmin() {
-		initialize();
+	public FrmEleccionAdmin(Usuario user) {
+		this.user = user;
+		createFrom();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void createFrom() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,6 +87,7 @@ public class FrmAdmin {
 			}
 		});
 		panel_1.add(btnAparcamientos);
+		frame.setVisible(true);
 	}
 
 }
