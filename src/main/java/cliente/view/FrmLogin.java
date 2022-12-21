@@ -2,6 +2,8 @@ package cliente.view;
 
 import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +11,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FrmLogin extends JFrame {
 
@@ -17,7 +21,9 @@ public class FrmLogin extends JFrame {
 	private Usuario usuario;
 	private JPasswordField passwordField;
 
-	public FrmLogin() {
+    Logger logger = LoggerFactory.getLogger(FrmLogin.class);
+
+    public FrmLogin() {
 
 		createForm();
 		frame.addWindowListener(new WindowAdapter() {
@@ -40,6 +46,7 @@ public class FrmLogin extends JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void createForm() {
+
 		frame = new JFrame();
 
 		frame.setTitle("Logging");
@@ -79,13 +86,14 @@ public class FrmLogin extends JFrame {
 		
 		JButton btnIniciarSesion = new JButton("Iniciar sesión");
 		btnIniciarSesion.addActionListener(arg0 -> {
-			if (txtDni.getText().trim().length() > 0 && passwordField.getPassword().length > 0) {
-				usuario = LogicaUsuario.loggin(txtDni.getText().trim(),new String(passwordField.getPassword()));
+			if (checkCampos()) {
+				usuario = LogicaUsuario.loggin(txtDni.getText().trim());
 				if (usuario != null){
 					if (usuario.getPassword().equals(new String(passwordField.getPassword()))){
+
 						switch (usuario.getTipoUsuario()){
 							case 1://Admin
-								new FrmEleccionAdmin();
+								new FrmEleccionAdmin(usuario);
 								frame.dispose();
 								break;
 							case 2://Normal User
@@ -95,6 +103,7 @@ public class FrmLogin extends JFrame {
 							default:
 								JOptionPane.showMessageDialog(null,"Tipo de usuario desconocido.");
 						}
+
 					}else{
 						JOptionPane.showMessageDialog(null,"Contraseña introducida es incorrecta.");
 					}
@@ -110,6 +119,26 @@ public class FrmLogin extends JFrame {
 		PanelBotones.add(btnIniciarSesion);
 		
 		JButton btnNewButton = new JButton("Registrar cuenta");
+		btnNewButton.addActionListener(e -> {
+
+			if (checkCampos()){
+
+				usuario = LogicaUsuario.singIn(new Usuario(txtDni.getText(),new String(passwordField.getPassword())));
+                logger.info(usuario.toString());
+
+                if (null != usuario.getId()){
+					JOptionPane.showMessageDialog(null,"Usuario creado correctamente.");
+					new FrmEleccion(usuario);
+					frame.dispose();
+				}else{
+                    logger.info("entro");
+					JOptionPane.showMessageDialog(null,"El usuario ya existe.");
+				}
+
+            }else {
+                JOptionPane.showMessageDialog(null,"Rellena los campos correctamente.");
+            }
+		});
 		PanelBotones.add(btnNewButton);
 		
 		JPanel PanelDatos = new JPanel();
@@ -161,6 +190,10 @@ public class FrmLogin extends JFrame {
 		JLabel lblInicioSesion_1 = new JLabel("Inicia sesión o regístrate.");
 		lblInicioSesion_1.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_2.add(lblInicioSesion_1);
+	}
+
+	private boolean checkCampos() {
+		return txtDni.getText().trim().length() == 9 && passwordField.getPassword().length > 3;
 	}
 
 }
