@@ -80,7 +80,8 @@ public class FrmEleccion {
 		
 		JButton btnAparcamientos = new JButton("Aparcamientos");
 		btnAparcamientos.addActionListener(e -> {
-			//TODO Abrir aparcamientos
+			new FrmParking(user);
+			frame.dispose();
 		});
 		btnAparcamientos.setPreferredSize(new Dimension(190, 50));
 		panel.add(btnAparcamientos, BorderLayout.EAST);

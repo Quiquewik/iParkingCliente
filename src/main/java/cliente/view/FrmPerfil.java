@@ -17,7 +17,8 @@ public class FrmPerfil {
 
     private JFrame frame;
 
-    private Usuario user;
+    private final Usuario userIn;
+    private Usuario userLogged;
     private boolean isAdmin;
     private JTextField txtID;
     private JTextField txtDNI;
@@ -30,25 +31,22 @@ public class FrmPerfil {
     private UsuarioController controller;
     Logger logger = LoggerFactory.getLogger(FrmPerfil.class);
 
+    public FrmPerfil( Usuario userLogged, boolean isAdmin, Usuario userIn){
+        this.userIn = userIn;
+        this.isAdmin = isAdmin;
+        this.userLogged = userLogged;
+        createForm();
+    }
+
     /**
      * Create the application.
      */
-    public FrmPerfil(Usuario user, boolean isAdmin) {
-        this.user = user;
+    public FrmPerfil(Usuario userIn, boolean isAdmin) {
+        this.userIn = userIn;
         this.isAdmin = isAdmin;
+        this.userLogged = userIn;
         createForm();
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                } else {
-                    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                }
-            }
-        });
-        frame.setVisible(true);
+
     }
 
     /**
@@ -65,6 +63,21 @@ public class FrmPerfil {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension minSize = new Dimension(403, 373);
         frame.setMinimumSize(minSize);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                    if (isAdmin){
+                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    }else {
+                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    }
+                } else {
+                        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
+            }
+        });
         JMenuBar menuBar = new JMenuBar();
         frame.getContentPane().add(menuBar, BorderLayout.NORTH);
 
@@ -95,7 +108,7 @@ public class FrmPerfil {
         txtID = new JTextField();
         txtID.setHorizontalAlignment(SwingConstants.CENTER);
         txtID.setColumns(10);
-        txtID.setText(null != user.getId() ? user.getId().trim() : "");
+        txtID.setText(null != userIn.getId() ? userIn.getId().trim() : "");
         txtID.setEnabled(isAdmin);
         panelDatos.add(txtID);
 
@@ -105,7 +118,7 @@ public class FrmPerfil {
 
         txtUsuario = new JTextField();
         txtUsuario.setHorizontalAlignment(SwingConstants.CENTER);
-        txtUsuario.setText(null != user.getNombreUsuario() ? user.getNombreUsuario().trim() : "");
+        txtUsuario.setText(null != userIn.getNombreUsuario() ? userIn.getNombreUsuario().trim() : "");
         txtUsuario.setColumns(10);
         panelDatos.add(txtUsuario);
 
@@ -116,7 +129,7 @@ public class FrmPerfil {
         txtDNI = new JTextField();
         txtDNI.setHorizontalAlignment(SwingConstants.CENTER);
         txtDNI.setColumns(10);
-        txtDNI.setText(null != user.getDni() ? user.getDni().trim() : "");
+        txtDNI.setText(null != userIn.getDni() ? userIn.getDni().trim() : "");
         txtDNI.setEnabled(isAdmin);
         panelDatos.add(txtDNI);
 
@@ -135,7 +148,7 @@ public class FrmPerfil {
 
             }
         });
-        passwordField.setText(null != user.getPassword() ? user.getPassword().trim() : "");
+        passwordField.setText(null != userIn.getPassword() ? userIn.getPassword().trim() : "");
         panelDatos.add(passwordField);
 
         JLabel lblNombre = new JLabel("Nombre:");
@@ -144,7 +157,7 @@ public class FrmPerfil {
 
         txtNombre = new JTextField();
         txtNombre.setHorizontalAlignment(SwingConstants.CENTER);
-        txtNombre.setText(null != user.getNombre() ? user.getNombre().trim() : "");
+        txtNombre.setText(null != userIn.getNombre() ? userIn.getNombre().trim() : "");
         txtNombre.setColumns(10);
         panelDatos.add(txtNombre);
 
@@ -154,7 +167,7 @@ public class FrmPerfil {
 
         txtApellido = new JTextField();
         txtApellido.setHorizontalAlignment(SwingConstants.CENTER);
-        txtApellido.setText(null != user.getApellidos() ? user.getApellidos().trim() : "");
+        txtApellido.setText(null != userIn.getApellidos() ? userIn.getApellidos().trim() : "");
         txtApellido.setColumns(10);
         panelDatos.add(txtApellido);
 
@@ -164,7 +177,7 @@ public class FrmPerfil {
 
         txtMail = new JTextField();
         txtMail.setHorizontalAlignment(SwingConstants.CENTER);
-        txtMail.setText(null != user.getCorreo() ? user.getCorreo().trim() : "");
+        txtMail.setText(null != userIn.getCorreo() ? userIn.getCorreo().trim() : "");
         txtMail.setColumns(10);
         panelDatos.add(txtMail);
 
@@ -174,7 +187,7 @@ public class FrmPerfil {
 
         txtAddress = new JTextField();
         txtAddress.setHorizontalAlignment(SwingConstants.CENTER);
-        txtAddress.setText(null != user.getDireccion() ? user.getDireccion().trim() : "");
+        txtAddress.setText(null != userIn.getDireccion() ? userIn.getDireccion().trim() : "");
         txtAddress.setColumns(10);
         panelDatos.add(txtAddress);
 
@@ -183,7 +196,7 @@ public class FrmPerfil {
 
         JButton btnListaVehiculos = new JButton("Lista vehículos");
         btnListaVehiculos.addActionListener(e -> {
-            //TODO abrir ventana vehiculos
+            new FrmListaVehiculos(userIn);
         });
         panel_2.add(btnListaVehiculos);
 
@@ -193,16 +206,17 @@ public class FrmPerfil {
                 logger.info("Check Usuario correcto");
                 if (isAdmin) {
                     logger.info("Check edicion Usuario siendo admin correcto");
-                    user.setId(txtID.getText().trim());
-                    user.setNombreUsuario(txtUsuario.getText().trim());
-                    user.setDni(txtDNI.getText().trim());
+                    userIn.setId(txtID.getText().trim());
+                    userIn.setDni(txtDNI.getText().trim());
                 }
-                user.setPassword(new String(passwordField.getPassword()).trim());
-                user.setNombre(txtNombre.getText().trim());
-                user.setApellidos(txtApellido.getText().trim());
-                user.setCorreo(txtMail.getText().trim());
-                user.setDireccion(txtAddress.getText().trim());
-                controller.callUpdateUsuarioById(user);
+                userIn.setNombreUsuario(txtUsuario.getText().trim());
+                userIn.setPassword(new String(passwordField.getPassword()).trim());
+                userIn.setNombre(txtNombre.getText().trim());
+                userIn.setApellidos(txtApellido.getText().trim());
+                userIn.setCorreo(txtMail.getText().trim());
+                userIn.setDireccion(txtAddress.getText().trim());
+                controller.callUpdateUsuarioById(userIn);
+                JOptionPane.showMessageDialog(null, "Datos del perfin actualizados.");
             } else {
                 JOptionPane.showMessageDialog(null, "Compruebe que todos los campos estan correctamente cumplimentados");
             }
@@ -215,12 +229,12 @@ public class FrmPerfil {
             if (JOptionPane.showConfirmDialog(null, "Si sale no se guardarán los cambios.", "Cuidado",
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 if (isAdmin) {
-                    //TODO volver a lista usuarios (admin).
-                    new FrmEleccionAdmin(user);
+                    frame.dispose();
                 } else {
-                    new FrmEleccion(user);
+                    frame.dispose();
+                    new FrmEleccion(userIn);
                 }
-                frame.dispose();
+
             }
         });
         panel_2.add(btnVolver);
@@ -237,6 +251,8 @@ public class FrmPerfil {
         JSeparator separator_1 = new JSeparator();
         panel_1.add(separator_1);
 
+
+        frame.setVisible(true);
     }
 
     private boolean checkCampos() {

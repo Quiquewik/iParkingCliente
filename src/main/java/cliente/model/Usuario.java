@@ -19,16 +19,15 @@ public class Usuario {
 	private String id;
 	private String nombreUsuario;
 	private String password;
-	@Indexed(unique = true)
 	private String dni;
 	private String nombre;
 	private String apellidos;
 	private String direccion;
-	@Indexed(unique = true)
 	private String correo;
+	private Vehiculo[] listaVehiculos;
 	private int	tipoUsuario;
 
-	public Usuario(String nombreUsuario, String password, String dni, String nombre, String apellidos, String direccion, String correo, int tipoUsuario) {
+	public Usuario(String nombreUsuario, String password, String dni, String nombre, String apellidos, String direccion, String correo,Vehiculo[] listaVehiculos, int tipoUsuario) {
 		this.nombreUsuario = nombreUsuario;
 		this.password = password;
 		this.dni = dni;
@@ -36,6 +35,7 @@ public class Usuario {
 		this.apellidos = apellidos;
 		this.direccion = direccion;
 		this.correo = correo;
+		this.listaVehiculos = listaVehiculos;
 		this.tipoUsuario = tipoUsuario;
 	}
 
@@ -44,6 +44,7 @@ public class Usuario {
 		this.dni = dni;
 		this.password = pass;
 		this.tipoUsuario = 2;
+		this.listaVehiculos = new Vehiculo[0];
 	}
 
 	//Metodo check para comprobar si usuario tien todos los datos.
@@ -51,7 +52,8 @@ public class Usuario {
 		boolean result;
 
 		result = usuario.id != null && usuario.nombreUsuario != null && usuario.password != null && usuario.dni != null && usuario.dni.length() == 9 &&
-				usuario.nombre != null && usuario.apellidos != null && usuario.direccion != null && usuario.correo != null && usuario.tipoUsuario > 0;
+				usuario.nombre != null && usuario.apellidos != null && usuario.direccion != null && usuario.correo != null && usuario.tipoUsuario > 0 &&
+				usuario.listaVehiculos.length > 0;
 
 		return result;
 	}

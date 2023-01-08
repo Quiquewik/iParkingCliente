@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
-@Document(collection = "parking")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,13 +20,12 @@ public class Plaza {
 
     @Id
     private String id;
-    @Indexed(unique = true)
     private int numeroPlaza;
     private int tipoPlaza;
     private boolean ocupado;
-    private LocalDateTime inicioAparcamiento;
+    private Date inicioAparcamiento;
 
-    public Plaza(int numeroPlaza, int tipoPlaza, boolean ocupado, LocalDateTime inicioAparcamiento) {
+    public Plaza(int numeroPlaza, int tipoPlaza, boolean ocupado, Date inicioAparcamiento) {
         this.numeroPlaza = numeroPlaza;
         this.tipoPlaza = tipoPlaza;
         this.ocupado = ocupado;
