@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
@@ -19,14 +21,19 @@ public class Usuario {
 	private String id;
 	private String nombreUsuario;
 	private String password;
+	@Indexed(unique = true)
 	private String dni;
 	private String nombre;
 	private String apellidos;
 	private String direccion;
 	private String correo;
-	private Vehiculo[] listaVehiculos;
 	private int	tipoUsuario;
-
+	//Hay 3 tipos, Básica, Trabajador y Premium
+	private String membresia;
+	private Date inicioMembresia;
+	private Date finMembresia;
+	private boolean isMembresiaActiva;
+	private Vehiculo[] listaVehiculos;
 	public Usuario(String nombreUsuario, String password, String dni, String nombre, String apellidos, String direccion, String correo,Vehiculo[] listaVehiculos, int tipoUsuario) {
 		this.nombreUsuario = nombreUsuario;
 		this.password = password;
@@ -40,22 +47,12 @@ public class Usuario {
 	}
 
 	//Default constructor para SingIn para usuario común
-	public Usuario(String dni, String pass) {
+	public Usuario(String dni, String pass, String membresia) {
 		this.dni = dni;
 		this.password = pass;
 		this.tipoUsuario = 2;
 		this.listaVehiculos = new Vehiculo[0];
-	}
-
-	//Metodo check para comprobar si usuario tien todos los datos.
-	private boolean checkUsuario(Usuario usuario){
-		boolean result;
-
-		result = usuario.id != null && usuario.nombreUsuario != null && usuario.password != null && usuario.dni != null && usuario.dni.length() == 9 &&
-				usuario.nombre != null && usuario.apellidos != null && usuario.direccion != null && usuario.correo != null && usuario.tipoUsuario > 0 &&
-				usuario.listaVehiculos.length > 0;
-
-		return result;
+		this.membresia = membresia;
 	}
 
 }

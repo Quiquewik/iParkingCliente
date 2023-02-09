@@ -1,34 +1,20 @@
 package cliente.view;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 import cliente.logica.LogicaUsuario;
-import cliente.logica.LogicaVehiculo;
 import cliente.model.Usuario;
 import cliente.model.Vehiculo;
 
-import javax.swing.JMenuBar;
-import java.awt.BorderLayout;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import javax.swing.JSeparator;
-import java.awt.event.ActionListener;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
-public class FrmVehiculo extends JFrame {
+public class FrmVehiculo extends JDialog {
 
-    private JPanel contentPane;
     private JTextField txtMatricula;
     private JTextField txtMarca;
     private JTextField txtModelo;
@@ -36,27 +22,33 @@ public class FrmVehiculo extends JFrame {
     private JTextField txtTipo;
     private JTextField txtEstacionado;
     private Usuario user;
-    private int indexVehiculo;
-    private boolean add;
-    private Vehiculo vehiculoIn;
+    private final int indexVehiculo;
+    private final boolean add;
+    private final Vehiculo vehiculoIn;
 
 
-    public FrmVehiculo(Usuario user, int indexVehiculo, boolean add) {
+    public FrmVehiculo(Usuario user, int indexVehiculo, boolean add) throws IOException {
         this.add = add;
         this.user = user;
         this.indexVehiculo = indexVehiculo;
         this.vehiculoIn = indexVehiculo >= 0 ? user.getListaVehiculos()[indexVehiculo] : new Vehiculo();
         createFrom();
+        rellenarCampos();
+        setVisible(true);
+
     }
 
 
-    public void createFrom() {
+    public void createFrom() throws IOException {
+
+        setTitle("iParking - Información del vehículo");
+        setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        setModal(true);
 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 } else {
                     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -64,7 +56,7 @@ public class FrmVehiculo extends JFrame {
             }
         });
         setBounds(100, 100, 595, 300);
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         setContentPane(contentPane);
@@ -76,17 +68,15 @@ public class FrmVehiculo extends JFrame {
         JMenu mnSesin = new JMenu("Sesión");
         menuBar.add(mnSesin);
 
-        JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión");
+        JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión y salir");
+        itemCerrarSesion.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                dispose();
+            }
+        });
         mnSesin.add(itemCerrarSesion);
-
-        JMenuItem ItemSalir = new JMenuItem("Salir");
-        mnSesin.add(ItemSalir);
-
-        JMenu MenuAyuda = new JMenu("Ayuda");
-        menuBar.add(MenuAyuda);
-
-        JMenuItem itemAyuda = new JMenuItem("Ayuda");
-        MenuAyuda.add(itemAyuda);
 
         JPanel panelBotones = new JPanel();
         contentPane.add(panelBotones, BorderLayout.SOUTH);
@@ -95,12 +85,12 @@ public class FrmVehiculo extends JFrame {
         btnGuardar.addActionListener(e -> {
             if (checkCampos()) {
                 vehiculoIn.setMatricula(txtMatricula.getText().trim());
-                vehiculoIn.setTipoVehiculo(txtTipo.getText().trim().equalsIgnoreCase("coche")?1:2);
+                vehiculoIn.setTipoVehiculo(txtTipo.getText().trim().equalsIgnoreCase("coche") ? 1 : 2);
                 vehiculoIn.setEstacionado(txtEstacionado.getText().trim().equalsIgnoreCase("si"));
                 vehiculoIn.setMarca(txtMarca.getText().trim());
                 vehiculoIn.setModelo(txtModelo.getText().trim());
                 vehiculoIn.setId_plaza(txtPlaza.getText().trim());
-                user = LogicaUsuario.updateUsuario(LogicaUsuario.updateVehiculos(user, vehiculoIn, indexVehiculo,add));
+                user = LogicaUsuario.updateUsuario(LogicaUsuario.updateVehiculos(user, vehiculoIn, indexVehiculo, add));
                 JOptionPane.showMessageDialog(null, "Cambios guardados con exito.");
             } else {
                 JOptionPane.showMessageDialog(null, "Comprueba los campos.");
@@ -109,10 +99,7 @@ public class FrmVehiculo extends JFrame {
         panelBotones.add(btnGuardar);
 
         JButton btnVolver = new JButton("Volver");
-        btnVolver.addActionListener(e -> {
-            new FrmListaVehiculos(user);
-            dispose();
-        });
+        btnVolver.addActionListener(e -> dispose());
         panelBotones.add(btnVolver);
 
         JPanel panelEdicion = new JPanel();
@@ -133,7 +120,6 @@ public class FrmVehiculo extends JFrame {
         txtMatricula.setBounds(134, 61, 123, 20);
         panelEdicion.add(txtMatricula);
         txtMatricula.setColumns(10);
-        txtMatricula.setText(null != vehiculoIn.getMatricula() ? vehiculoIn.getMatricula() : "");
 
         JLabel lblMarca = new JLabel("Marca:");
         lblMarca.setHorizontalAlignment(SwingConstants.CENTER);
@@ -144,7 +130,6 @@ public class FrmVehiculo extends JFrame {
         txtMarca.setColumns(10);
         txtMarca.setBounds(134, 98, 123, 20);
         panelEdicion.add(txtMarca);
-        txtMarca.setText(null != vehiculoIn.getMarca() ? vehiculoIn.getMarca() : "");
 
 
         JLabel lblModelo = new JLabel("Modelo:");
@@ -156,14 +141,13 @@ public class FrmVehiculo extends JFrame {
         txtModelo.setColumns(10);
         txtModelo.setBounds(134, 135, 123, 20);
         panelEdicion.add(txtModelo);
-        txtModelo.setText(null != vehiculoIn.getModelo() ? vehiculoIn.getModelo() : "");
 
 
         JSeparator separator = new JSeparator();
         separator.setBounds(24, 37, 521, 2);
         panelEdicion.add(separator);
 
-        JLabel lblIdPlaza = new JLabel("Plaza aparcada:");
+        JLabel lblIdPlaza = new JLabel("Plaza asiganada:");
         lblIdPlaza.setHorizontalAlignment(SwingConstants.CENTER);
         lblIdPlaza.setBounds(312, 58, 100, 26);
         panelEdicion.add(lblIdPlaza);
@@ -184,6 +168,30 @@ public class FrmVehiculo extends JFrame {
         txtTipo.setColumns(10);
         txtTipo.setBounds(422, 98, 123, 20);
         panelEdicion.add(txtTipo);
+
+
+        txtEstacionado = new JTextField();
+        txtEstacionado.setColumns(10);
+        txtEstacionado.setBounds(422, 135, 123, 20);
+        panelEdicion.add(txtEstacionado);
+
+
+        JLabel lblEstacionado = new JLabel("Estacionado:");
+        lblEstacionado.setHorizontalAlignment(SwingConstants.CENTER);
+        lblEstacionado.setBounds(312, 132, 100, 26);
+        panelEdicion.add(lblEstacionado);
+    }
+
+    private void rellenarCampos() {
+        if (!user.getMembresia().equalsIgnoreCase("premium")){
+            txtPlaza.setEnabled(false);
+        }
+        txtMatricula.setText(null != vehiculoIn.getMatricula() ? vehiculoIn.getMatricula() : "");
+
+        txtMarca.setText(null != vehiculoIn.getMarca() ? vehiculoIn.getMarca() : "");
+
+        txtModelo.setText(null != vehiculoIn.getModelo() ? vehiculoIn.getModelo() : "");
+
         switch (vehiculoIn.getTipoVehiculo()) {
             case 1:
                 txtTipo.setText("Coche");
@@ -194,26 +202,13 @@ public class FrmVehiculo extends JFrame {
             default:
                 txtTipo.setText("");
         }
-
-
-        txtEstacionado = new JTextField();
-        txtEstacionado.setColumns(10);
-        txtEstacionado.setBounds(422, 135, 123, 20);
-        panelEdicion.add(txtEstacionado);
         txtEstacionado.setText(vehiculoIn.isEstacionado() ? "Si" : "No");
 
-
-        JLabel lblEstacionado = new JLabel("Estacionado:");
-        lblEstacionado.setHorizontalAlignment(SwingConstants.CENTER);
-        lblEstacionado.setBounds(312, 132, 100, 26);
-        panelEdicion.add(lblEstacionado);
-        setVisible(true);
     }
 
 
     private boolean checkCampos() {
-        return txtMatricula.getText().trim().length() > 0 && txtTipo.getText().trim().length() > 0 && txtEstacionado.getText().trim().length() > 0 && txtMarca.getText().trim().length() > 0 && txtModelo.getText().trim().length() > 0
-                && (txtEstacionado.getText().trim().equalsIgnoreCase("si") || txtEstacionado.getText().trim().equalsIgnoreCase("no"));
+        return txtMatricula.getText().trim().length() > 0 && txtTipo.getText().trim().length() > 0 && txtEstacionado.getText().trim().length() > 0 && txtMarca.getText().trim().length() > 0 && txtModelo.getText().trim().length() > 0 && (txtEstacionado.getText().trim().equalsIgnoreCase("si") || txtEstacionado.getText().trim().equalsIgnoreCase("no"));
     }
 
 

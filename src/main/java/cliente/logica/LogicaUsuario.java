@@ -7,53 +7,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 public class LogicaUsuario {
     static Logger logger = LoggerFactory.getLogger(LogicaUsuario.class);
 
     static UsuarioController controller = new UsuarioController();
-    public static Usuario loggin(String dni){
+
+    public static Usuario loggin(String dni) {
         return controller.callGetUsuarioByDni(dni);
     }
 
-    public static Usuario singIn(Usuario user){
+    public static Usuario singIn(Usuario user) {
         logger.info(user.toString());
-        return  controller.callAddUsuario(user);
+        return controller.callAddUsuario(user);
     }
 
-    public static Usuario[] getUsuarios(){
+    public static Usuario[] getUsuarios() {
         Usuario[] listaUser = controller.callGetUsuarios();
         logger.info(Arrays.toString(listaUser));
         return listaUser;
     }
 
-    public static Usuario getUsuarioById(String id){
+    public static Usuario getUsuarioById(String id) {
         return controller.callGetUsuarioById(id);
     }
 
-    public static void deleteUsuarioByDni(String dni){
+    public static void deleteUsuarioByDni(String dni) {
         controller.callDeleteUsuarioByDni(dni);
     }
 
-    public static Usuario updateUsuario(Usuario user){
+    public static Usuario updateUsuario(Usuario user) {
         return controller.callUpdateUsuarioById(user);
     }
 
     public static DefaultTableModel getDefaultTableModel() {
-        DefaultTableModel model =new DefaultTableModel(
-                new Object[][] {
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][]{
                 },
-                new String[] {
+                new String[]{
                         "Id", "Usuario", "DNI", "Nombre", "Apellidos", "Direcci\u00F3n", "Correo", "Tipo"
                 }
         );
         Usuario[] listaUsers = getUsuarios();
-        for (Usuario u: listaUsers){
-            ArrayList<String> listaAtributos= new ArrayList<>();
+        for (Usuario u : listaUsers) {
+            ArrayList<String> listaAtributos = new ArrayList<>();
             listaAtributos.add(u.getId());
             listaAtributos.add(u.getNombreUsuario());
             listaAtributos.add(u.getDni());
@@ -61,7 +60,7 @@ public class LogicaUsuario {
             listaAtributos.add(u.getApellidos());
             listaAtributos.add(u.getDireccion());
             listaAtributos.add(u.getCorreo());
-            listaAtributos.add(u.getTipoUsuario()==1?"Admin":"Normal");
+            listaAtributos.add(u.getTipoUsuario() == 1 ? "Admin" : "Normal");
             model.addRow(listaAtributos.toArray());
         }
         return model;
@@ -69,25 +68,25 @@ public class LogicaUsuario {
 
     public static Usuario updateVehiculos(Usuario user, Vehiculo vehiculoIn, int indexVehiculo, boolean add) {
 
-        logger.info(user.toString() + "  vehiculo:" +vehiculoIn.toString());
+        logger.info(user.toString() + "  vehiculo:" + vehiculoIn.toString());
         Vehiculo[] lista = user.getListaVehiculos();
         Vehiculo[] listaOut;
-        if (add){
-            if (null != lista){
-                listaOut = new Vehiculo[lista.length+1];
-                for (int i = 0; i < lista.length ; i++){
+        if (add) {
+            if (null != lista) {
+                listaOut = new Vehiculo[lista.length + 1];
+                for (int i = 0; i < lista.length; i++) {
                     listaOut[i] = lista[i];
                 }
-                listaOut[listaOut.length-1] = vehiculoIn;
-            }else{
+                listaOut[listaOut.length - 1] = vehiculoIn;
+            } else {
                 listaOut = new Vehiculo[]{vehiculoIn};
             }
-            user.setListaVehiculos( listaOut);
-        }else{
-            if (null != lista && lista.length > 0){
+            user.setListaVehiculos(listaOut);
+        } else {
+            if (null != lista && lista.length > 0) {
                 lista[indexVehiculo] = vehiculoIn;
                 user.setListaVehiculos(lista);
-            }else{
+            } else {
                 user.setListaVehiculos(new Vehiculo[]{vehiculoIn});
             }
         }
@@ -96,4 +95,30 @@ public class LogicaUsuario {
     }
 
 
+    public static void pagoMembresia(Usuario userLogged, String tipoMembresia, String mensualidad) {
+
+        userLogged.setMembresia(tipoMembresia);
+        userLogged.setMembresiaActiva(true);
+        userLogged.setInicioMembresia(new Date());
+        userLogged.setFinMembresia(calcularFin(mensualidad));
+        updateUsuario(userLogged);
+    }
+
+    private static Date calcularFin(String mensualidad) {
+        int addMonthsToDate = 0;
+        Calendar fechaOut = Calendar.getInstance();
+        switch (mensualidad) {
+            case "Mensual":
+                addMonthsToDate = 1;
+                break;
+            case "Semestral":
+                addMonthsToDate = 6;
+                break;
+            case "Anual":
+                addMonthsToDate = 12;
+                break;
+        }
+        fechaOut.add(Calendar.MONTH,addMonthsToDate);
+        return fechaOut.getTime();
+    }
 }

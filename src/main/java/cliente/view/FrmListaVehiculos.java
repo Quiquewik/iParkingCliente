@@ -3,36 +3,37 @@ package cliente.view;
 import cliente.logica.LogicaVehiculo;
 import cliente.model.Usuario;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 
-public class FrmListaVehiculos extends JFrame {
+public class FrmListaVehiculos extends JDialog {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JPanel contentPane;
-
 	private Usuario user;
-	private JTable table;
 
-	public FrmListaVehiculos(Usuario user) {
+	public FrmListaVehiculos(Usuario user) throws IOException {
 		setTitle("Tus vehículos");
 		this.user = user;
 		createForm();
 		
 	}
 	
-	public void createForm() {
+	public void createForm() throws IOException {
+		setModal(true);
+		setTitle("iParking - Lista de vahículos");
+		setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -45,7 +46,7 @@ public class FrmListaVehiculos extends JFrame {
 			}
 		});
 		setBounds(100, 100, 550, 300);
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -77,31 +78,38 @@ public class FrmListaVehiculos extends JFrame {
 		JMenu mnSesin = new JMenu("Sesión");
 		menuBar.add(mnSesin);
 		
-		JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión");
+		JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión y salir");
+		itemCerrarSesion.addActionListener(e -> {
+			if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+				setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				dispose();
+			}
+		});
 		mnSesin.add(itemCerrarSesion);
-		
-		JMenuItem ItemSalir = new JMenuItem("Salir");
-		mnSesin.add(ItemSalir);
-		
-		JMenu MenuAyuda = new JMenu("Ayuda");
-		menuBar.add(MenuAyuda);
-		
-		JMenuItem itemAyuda = new JMenuItem("Ayuda");
-		MenuAyuda.add(itemAyuda);
 		
 		JPanel panelBotones = new JPanel();
 		contentPane.add(panelBotones, BorderLayout.SOUTH);
 		
 		JButton btnAdd = new JButton("Añadir");
 		btnAdd.addActionListener(e -> {
-			new FrmVehiculo(user, table.getSelectedRow(),true);
+			try {
+				new FrmVehiculo(user, table.getSelectedRow(),true);
+				table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		});
 		panelBotones.add(btnAdd);
 		
 		JButton btnEditar = new JButton("Editar");
-		btnEditar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnEditar.addActionListener(e -> {
+			try {
 				new FrmVehiculo(user, table.getSelectedRow(),false);
+				table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
+
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
 			}
 		});
 		panelBotones.add(btnEditar);
@@ -126,10 +134,7 @@ public class FrmListaVehiculos extends JFrame {
 		panelBotones.add(separator);
 		
 		JButton btnRefrescar = new JButton("Refrescar");
-		btnRefrescar.addActionListener(e -> {
-
-			table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.getUsuarioById(user.getId())));
-		});
+		btnRefrescar.addActionListener(e -> table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.getUsuarioById(user.getId()))));
 		panelBotones.add(btnRefrescar);
 		setVisible(true);
 	}

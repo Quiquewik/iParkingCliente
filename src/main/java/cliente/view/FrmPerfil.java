@@ -5,21 +5,22 @@ import cliente.model.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Dimension;
-
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class FrmPerfil {
 
     private JFrame frame;
 
     private final Usuario userIn;
-    private Usuario userLogged;
-    private boolean isAdmin;
+    private final boolean isAdmin;
     private JTextField txtID;
     private JTextField txtDNI;
     private JTextField txtUsuario;
@@ -31,50 +32,52 @@ public class FrmPerfil {
     private UsuarioController controller;
     Logger logger = LoggerFactory.getLogger(FrmPerfil.class);
 
-    public FrmPerfil( Usuario userLogged, boolean isAdmin, Usuario userIn){
+    public FrmPerfil(boolean isAdmin, Usuario userIn) throws IOException {
         this.userIn = userIn;
         this.isAdmin = isAdmin;
-        this.userLogged = userLogged;
         createForm();
     }
 
     /**
      * Create the application.
      */
-    public FrmPerfil(Usuario userIn, boolean isAdmin) {
+    public FrmPerfil(Usuario userIn, boolean isAdmin, boolean firstLogging) throws IOException {
         this.userIn = userIn;
         this.isAdmin = isAdmin;
-        this.userLogged = userIn;
+        if (firstLogging) {
+            JOptionPane.showMessageDialog(null, "Por favor rellena los datos para poder usar la applicación correctamente.");
+
+        }
         createForm();
+        rellenarCampos();
 
     }
 
     /**
      * Initialize the contents of the frame.
      */
-    private void createForm() {
+    private void createForm() throws IOException {
 
         controller = new UsuarioController();
 
         frame = new JFrame();
+        frame.setTitle("iParking - Información del perfil");
+        frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
         frame.setTitle("iParking - Menú");
-        frame.setBounds(100, 100, 403, 373);
+        frame.setBounds(100, 100, 550, 498);
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Dimension minSize = new Dimension(403, 373);
-        frame.setMinimumSize(minSize);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
-                    if (isAdmin){
+                if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                    if (isAdmin) {
                         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    }else {
+                    } else {
                         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     }
                 } else {
-                        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 }
             }
         });
@@ -85,13 +88,13 @@ public class FrmPerfil {
         menuBar.add(MenuSesion);
 
         JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión y salir");
+        itemCerrarSesion.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.dispose();
+            }
+        });
         MenuSesion.add(itemCerrarSesion);
-
-        JMenu MenuAyuda = new JMenu("Ayuda");
-        menuBar.add(MenuAyuda);
-
-        JMenuItem itemAyuda = new JMenuItem("Ayuda");
-        MenuAyuda.add(itemAyuda);
 
         JPanel panel = new JPanel();
         frame.getContentPane().add(panel, BorderLayout.CENTER);
@@ -101,6 +104,18 @@ public class FrmPerfil {
         panel.add(panelDatos, BorderLayout.CENTER);
         panelDatos.setLayout(new GridLayout(0, 2, 15, 5));
 
+        JLabel lblTipoMembresia = new JLabel("Suscripción:");
+        lblTipoMembresia.setHorizontalAlignment(SwingConstants.CENTER);
+        panelDatos.add(lblTipoMembresia);
+
+        JTextField txtTipoMembresia = new JTextField();
+        txtTipoMembresia.setText("<dynamic>");
+        txtTipoMembresia.setHorizontalAlignment(SwingConstants.CENTER);
+        txtTipoMembresia.setEnabled(false);
+        txtTipoMembresia.setColumns(10);
+        txtTipoMembresia.setText(userIn.getMembresia());
+        panelDatos.add(txtTipoMembresia);
+
         JLabel lblId = new JLabel("ID:");
         lblId.setHorizontalAlignment(SwingConstants.CENTER);
         panelDatos.add(lblId);
@@ -108,7 +123,6 @@ public class FrmPerfil {
         txtID = new JTextField();
         txtID.setHorizontalAlignment(SwingConstants.CENTER);
         txtID.setColumns(10);
-        txtID.setText(null != userIn.getId() ? userIn.getId().trim() : "");
         txtID.setEnabled(isAdmin);
         panelDatos.add(txtID);
 
@@ -118,7 +132,6 @@ public class FrmPerfil {
 
         txtUsuario = new JTextField();
         txtUsuario.setHorizontalAlignment(SwingConstants.CENTER);
-        txtUsuario.setText(null != userIn.getNombreUsuario() ? userIn.getNombreUsuario().trim() : "");
         txtUsuario.setColumns(10);
         panelDatos.add(txtUsuario);
 
@@ -129,7 +142,6 @@ public class FrmPerfil {
         txtDNI = new JTextField();
         txtDNI.setHorizontalAlignment(SwingConstants.CENTER);
         txtDNI.setColumns(10);
-        txtDNI.setText(null != userIn.getDni() ? userIn.getDni().trim() : "");
         txtDNI.setEnabled(isAdmin);
         panelDatos.add(txtDNI);
 
@@ -148,7 +160,6 @@ public class FrmPerfil {
 
             }
         });
-        passwordField.setText(null != userIn.getPassword() ? userIn.getPassword().trim() : "");
         panelDatos.add(passwordField);
 
         JLabel lblNombre = new JLabel("Nombre:");
@@ -157,7 +168,6 @@ public class FrmPerfil {
 
         txtNombre = new JTextField();
         txtNombre.setHorizontalAlignment(SwingConstants.CENTER);
-        txtNombre.setText(null != userIn.getNombre() ? userIn.getNombre().trim() : "");
         txtNombre.setColumns(10);
         panelDatos.add(txtNombre);
 
@@ -167,7 +177,6 @@ public class FrmPerfil {
 
         txtApellido = new JTextField();
         txtApellido.setHorizontalAlignment(SwingConstants.CENTER);
-        txtApellido.setText(null != userIn.getApellidos() ? userIn.getApellidos().trim() : "");
         txtApellido.setColumns(10);
         panelDatos.add(txtApellido);
 
@@ -177,7 +186,6 @@ public class FrmPerfil {
 
         txtMail = new JTextField();
         txtMail.setHorizontalAlignment(SwingConstants.CENTER);
-        txtMail.setText(null != userIn.getCorreo() ? userIn.getCorreo().trim() : "");
         txtMail.setColumns(10);
         panelDatos.add(txtMail);
 
@@ -187,7 +195,6 @@ public class FrmPerfil {
 
         txtAddress = new JTextField();
         txtAddress.setHorizontalAlignment(SwingConstants.CENTER);
-        txtAddress.setText(null != userIn.getDireccion() ? userIn.getDireccion().trim() : "");
         txtAddress.setColumns(10);
         panelDatos.add(txtAddress);
 
@@ -196,8 +203,23 @@ public class FrmPerfil {
 
         JButton btnListaVehiculos = new JButton("Lista vehículos");
         btnListaVehiculos.addActionListener(e -> {
-            new FrmListaVehiculos(userIn);
+            try {
+                new FrmListaVehiculos(userIn);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
+
+        JButton btnActualizarSuscripcion = new JButton("Actualizar suscripción");
+        btnActualizarSuscripcion.addActionListener(e -> {
+            try {
+                new FrmPago(userIn);
+                rellenarCampos();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        panel_2.add(btnActualizarSuscripcion);
         panel_2.add(btnListaVehiculos);
 
         JButton btnAceptar = new JButton("Guardar cambios");
@@ -226,13 +248,16 @@ public class FrmPerfil {
 
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(null, "Si sale no se guardarán los cambios.", "Cuidado",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+            if (JOptionPane.showConfirmDialog(null, "Compruebe que ha guardado los cambios.", "Cuidado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 if (isAdmin) {
                     frame.dispose();
                 } else {
                     frame.dispose();
-                    new FrmEleccion(userIn);
+                    try {
+                        new FrmEleccion(userIn);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
 
             }
@@ -256,16 +281,26 @@ public class FrmPerfil {
     }
 
     private boolean checkCampos() {
-        return (txtID.getText().trim().length() > 0 &&
-                txtUsuario.getText().trim().length() > 0 &&
-                txtDNI.getText().trim().length() == 9 &&
-                passwordField.getPassword().length > 0 &&
-                txtNombre.getText().trim().length() > 0 &&
-                txtApellido.getText().trim().length() > 0 &&
-                txtMail.getText().trim().length() > 0 &&
-                txtMail.getText().contains("@") &&
-                txtAddress.getText().trim().length() > 0
-        );
+        return (txtID.getText().trim().length() > 0 && txtUsuario.getText().trim().length() > 0 && txtDNI.getText().trim().length() == 9 && passwordField.getPassword().length > 0 && txtNombre.getText().trim().length() > 0 && txtApellido.getText().trim().length() > 0 && txtMail.getText().trim().length() > 0 && txtMail.getText().contains("@") && txtAddress.getText().trim().length() > 0);
+    }
+
+    private void rellenarCampos() {
+        txtDNI.setText(null != userIn.getDni() ? userIn.getDni().trim() : "");
+
+        txtID.setText(null != userIn.getId() ? userIn.getId().trim() : "");
+
+        txtUsuario.setText(null != userIn.getNombreUsuario() ? userIn.getNombreUsuario().trim() : "");
+
+        passwordField.setText(null != userIn.getPassword() ? userIn.getPassword().trim() : "");
+
+        txtNombre.setText(null != userIn.getNombre() ? userIn.getNombre().trim() : "");
+
+        txtApellido.setText(null != userIn.getApellidos() ? userIn.getApellidos().trim() : "");
+
+        txtMail.setText(null != userIn.getCorreo() ? userIn.getCorreo().trim() : "");
+
+        txtAddress.setText(null != userIn.getDireccion() ? userIn.getDireccion().trim() : "");
+
     }
 
 }

@@ -5,14 +5,15 @@ import cliente.model.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class FrmLogin extends JFrame {
 
@@ -23,7 +24,7 @@ public class FrmLogin extends JFrame {
 
     Logger logger = LoggerFactory.getLogger(FrmLogin.class);
 
-    public FrmLogin() {
+    public FrmLogin() throws IOException {
 
 		createForm();
 		frame.addWindowListener(new WindowAdapter() {
@@ -38,6 +39,8 @@ public class FrmLogin extends JFrame {
 			}
 		});
 
+
+		frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 		frame.setVisible(true);
 
 	}
@@ -49,7 +52,7 @@ public class FrmLogin extends JFrame {
 
 		frame = new JFrame();
 
-		frame.setTitle("Logging");
+		frame.setTitle("iParking - Inicio de sesión");
 		frame.setBounds(100, 100, 300, 232);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -93,11 +96,19 @@ public class FrmLogin extends JFrame {
 
 						switch (usuario.getTipoUsuario()){
 							case 1://Admin
-								new FrmEleccionAdmin(usuario);
+								try {
+									new FrmEleccionAdmin(usuario);
+								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
 								frame.dispose();
 								break;
 							case 2://Normal User
-								new FrmEleccion(usuario);
+								try {
+									new FrmEleccion(usuario);
+								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
 								frame.dispose();
 								break;
 							default:
@@ -123,15 +134,18 @@ public class FrmLogin extends JFrame {
 
 			if (checkCampos()){
 
-				usuario = LogicaUsuario.singIn(new Usuario(txtDni.getText(),new String(passwordField.getPassword())));
+				usuario = LogicaUsuario.singIn(new Usuario(txtDni.getText(),new String(passwordField.getPassword()), "Free"));
                 logger.info(usuario.toString());
 
                 if (null != usuario.getId()){
 					JOptionPane.showMessageDialog(null,"Usuario creado correctamente.");
-					new FrmEleccion(usuario);
+					try {
+						new FrmPerfil(usuario , false, true);
+					} catch (IOException ex) {
+						throw new RuntimeException(ex);
+					}
 					frame.dispose();
 				}else{
-                    logger.info("entro");
 					JOptionPane.showMessageDialog(null,"El usuario ya existe.");
 				}
 

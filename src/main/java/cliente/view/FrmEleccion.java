@@ -1,22 +1,18 @@
 package cliente.view;
 
+import cliente.model.Parking;
 import cliente.model.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
 import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.FlowLayout;
+import java.io.File;
+import java.io.IOException;
 
 public class FrmEleccion {
 
@@ -25,7 +21,7 @@ public class FrmEleccion {
 
 	Logger logger = LoggerFactory.getLogger(FrmEleccion.class);
 
-	public FrmEleccion(Usuario user) {
+	public FrmEleccion(Usuario user) throws IOException {
 		createForm();
 		this.user = user;
 		frame.addWindowListener(new WindowAdapter() {
@@ -39,6 +35,8 @@ public class FrmEleccion {
 				}
 			}
 		});
+		frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+
 		frame.setVisible(true);
 
 	}
@@ -48,6 +46,7 @@ public class FrmEleccion {
 	 */
 	private void createForm() {
 		frame = new JFrame();
+		frame.setTitle("iParking - Menú");
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 450, 223);
 		frame.setLocationRelativeTo(null);
@@ -72,7 +71,11 @@ public class FrmEleccion {
 		JButton btnDatosUsuario = new JButton("Perfil de usuario");
 		btnDatosUsuario.addActionListener(e -> {
 			logger.info(user.toString());
-			new FrmPerfil(user,false);
+			try {
+				new FrmPerfil(user,false, false);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 			frame.dispose();
 		});
 		btnDatosUsuario.setPreferredSize(new Dimension(190, 50));
@@ -80,7 +83,11 @@ public class FrmEleccion {
 		
 		JButton btnAparcamientos = new JButton("Aparcamientos");
 		btnAparcamientos.addActionListener(e -> {
-			new FrmParking(user);
+			try {
+				new FrmParking(user ,  new Parking());
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 			frame.dispose();
 		});
 		btnAparcamientos.setPreferredSize(new Dimension(190, 50));
@@ -101,15 +108,6 @@ public class FrmEleccion {
 			}
 		});
 		MenuSesion.add(itemCerrarSesion);
-		
-		JMenu MenuAyuda = new JMenu("Ayuda");
-		menuBar.add(MenuAyuda);
-		
-		JMenuItem itemAyuda = new JMenuItem("Ayuda");
-		itemAyuda.addActionListener(e -> {
-			//TODO
-		});
-		MenuAyuda.add(itemAyuda);
 
 	}
 

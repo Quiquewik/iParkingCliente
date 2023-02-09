@@ -53,9 +53,6 @@ public class LogicaVehiculo {
             listaOut[i] = listaVehiculos[i].getMatricula();
         }
 
-        log.info(Arrays.toString(listaOut));
-        log.info(Arrays.toString(listaVehiculos));
-
         return listaOut;
     }
 }

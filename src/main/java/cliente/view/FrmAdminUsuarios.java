@@ -1,16 +1,17 @@
 package cliente.view;
 
-import java.awt.*;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.table.DefaultTableModel;
-
 import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class FrmAdminUsuarios {
 
@@ -19,7 +20,7 @@ public class FrmAdminUsuarios {
 
     private final Usuario user;
 
-    public FrmAdminUsuarios(Usuario user) {
+    public FrmAdminUsuarios(Usuario user) throws IOException {
         createForm();
         this.user = user;
         frmListaDeUsuarios.addWindowListener(new WindowAdapter() {
@@ -38,7 +39,10 @@ public class FrmAdminUsuarios {
     }
 
 
-    private void createForm() {
+    private void createForm() throws IOException {
+        frmListaDeUsuarios.setTitle("iParking - Lista de usuarios");
+        frmListaDeUsuarios.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+
         frmListaDeUsuarios = new JFrame();
         frmListaDeUsuarios.setTitle("Lista de usuarios");
         frmListaDeUsuarios.setBounds(100, 100, 700, 500);
@@ -54,13 +58,14 @@ public class FrmAdminUsuarios {
         menuBar.add(MenuSesion);
 
         JMenuItem itemCerrarSesion = new JMenuItem("Cerrar sesión y salir");
+        itemCerrarSesion.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(null, "¿Seguro que desea salir?", "Cuidado",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                frmListaDeUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frmListaDeUsuarios.dispose();
+            }
+        });
         MenuSesion.add(itemCerrarSesion);
-        
-        JMenu MenuAyuda = new JMenu("Ayuda");
-        menuBar.add(MenuAyuda);
-        
-        JMenuItem itemAyuda = new JMenuItem("Ayuda");
-        MenuAyuda.add(itemAyuda);
 
         JPanel panelListaUsuarios = new JPanel();
         frmListaDeUsuarios.getContentPane().add(panelListaUsuarios);
@@ -86,16 +91,18 @@ public class FrmAdminUsuarios {
             String idUsuario;
             if (filaSeleccionada != -1) {
                 idUsuario = table.getValueAt(filaSeleccionada, 0).toString();
-                new FrmPerfil(user, true, LogicaUsuario.getUsuarioById(idUsuario));
+                try {
+                    new FrmPerfil(true, LogicaUsuario.getUsuarioById(idUsuario));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Selecciona un usuario para editar.");
             }
         });
 
         JButton btnRefresh = new JButton("Refrescar");
-        btnRefresh.addActionListener(e -> {
-            table.setModel(LogicaUsuario.getDefaultTableModel());
-        });
+        btnRefresh.addActionListener(e -> table.setModel(LogicaUsuario.getDefaultTableModel()));
         panelBotones.add(btnRefresh);
         panelBotones.add(btnEditar);
 
@@ -122,7 +129,11 @@ public class FrmAdminUsuarios {
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> {
             frmListaDeUsuarios.dispose();
-            new FrmEleccionAdmin(user);
+            try {
+                new FrmEleccionAdmin(user);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         panelBotones.add(btnVolver);
     }
