@@ -18,6 +18,13 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>jcalendar-1.4</groupId>
+			<artifactId>jcalendar-1.4</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/src/main/resources/jcalendar-1.4.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
@@ -44,6 +51,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<includeSystemScope>true</includeSystemScope>
 					<excludes>
 						<exclude>
 							<groupId>org.project-lombok</groupId>

@@ -2,6 +2,8 @@ package cliente.view;
 
 import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class FrmLogin extends JFrame {
 
@@ -17,7 +20,9 @@ public class FrmLogin extends JFrame {
 	private Usuario usuario;
 	private JPasswordField passwordField;
 
-	public FrmLogin() {
+    Logger logger = LoggerFactory.getLogger(FrmLogin.class);
+
+    public FrmLogin() {
 
 		createForm();
 		frame.addWindowListener(new WindowAdapter() {
@@ -32,6 +37,8 @@ public class FrmLogin extends JFrame {
 			}
 		});
 
+
+		//frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 		frame.setVisible(true);
 
 	}
@@ -40,10 +47,12 @@ public class FrmLogin extends JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void createForm() {
+
 		frame = new JFrame();
 
-		frame.setTitle("Logging");
+		frame.setTitle("iParking - Inicio");
 		frame.setBounds(100, 100, 300, 232);
+		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -78,20 +87,32 @@ public class FrmLogin extends JFrame {
 		
 		JButton btnIniciarSesion = new JButton("Iniciar sesión");
 		btnIniciarSesion.addActionListener(arg0 -> {
-			if (txtDni.getText().trim().length() > 0 && passwordField.getPassword().length > 0) {
-				usuario = LogicaUsuario.loggin(txtDni.getText().trim(),new String(passwordField.getPassword()));
+			if (checkCampos()) {
+				usuario = LogicaUsuario.loggin(txtDni.getText().trim());
 				if (usuario != null){
 					if (usuario.getPassword().equals(new String(passwordField.getPassword()))){
+
 						switch (usuario.getTipoUsuario()){
 							case 1://Admin
-								//TODO abrir admin
+								try {
+									new FrmEleccionAdmin(usuario);
+								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
+								frame.dispose();
 								break;
 							case 2://Normal User
-								//TODO abrir user normal
+								try {
+									new FrmEleccion(usuario);
+								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
+								frame.dispose();
 								break;
 							default:
 								JOptionPane.showMessageDialog(null,"Tipo de usuario desconocido.");
 						}
+
 					}else{
 						JOptionPane.showMessageDialog(null,"Contraseña introducida es incorrecta.");
 					}
@@ -107,6 +128,25 @@ public class FrmLogin extends JFrame {
 		PanelBotones.add(btnIniciarSesion);
 		
 		JButton btnNewButton = new JButton("Registrar cuenta");
+		btnNewButton.addActionListener(e -> {
+
+			if (checkCampos()){
+
+				usuario = LogicaUsuario.singIn(new Usuario(txtDni.getText(),new String(passwordField.getPassword()), "Free"));
+                logger.info(usuario.toString());
+
+                if (null != usuario.getId()){
+					JOptionPane.showMessageDialog(null,"Usuario creado correctamente.");
+					new FrmPerfil(usuario , false, true);
+					frame.dispose();
+				}else{
+					JOptionPane.showMessageDialog(null,"El usuario ya existe.");
+				}
+
+            }else {
+                JOptionPane.showMessageDialog(null,"Rellena los campos correctamente.");
+            }
+		});
 		PanelBotones.add(btnNewButton);
 		
 		JPanel PanelDatos = new JPanel();
@@ -121,6 +161,7 @@ public class FrmLogin extends JFrame {
 		
 		txtDni = new JTextField();
 		txtDni.setBounds(145, 24, 118, 26);
+		txtDni.setPreferredSize(new Dimension(50,25));
 		txtDni.setHorizontalAlignment(SwingConstants.CENTER);
 		PanelDatos.add(txtDni);
 		txtDni.setColumns(9);
@@ -157,6 +198,10 @@ public class FrmLogin extends JFrame {
 		JLabel lblInicioSesion_1 = new JLabel("Inicia sesión o regístrate.");
 		lblInicioSesion_1.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_2.add(lblInicioSesion_1);
+	}
+
+	private boolean checkCampos() {
+		return txtDni.getText().trim().equals("admin") || txtDni.getText().trim().length() == 9 && passwordField.getPassword().length > 0;
 	}
 
 }

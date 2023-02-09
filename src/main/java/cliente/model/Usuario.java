@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
@@ -17,7 +19,6 @@ public class Usuario {
 
 	@Id
 	private String id;
-	@Indexed(unique = true)
 	private String nombreUsuario;
 	private String password;
 	@Indexed(unique = true)
@@ -25,11 +26,15 @@ public class Usuario {
 	private String nombre;
 	private String apellidos;
 	private String direccion;
-	@Indexed(unique = true)
 	private String correo;
 	private int	tipoUsuario;
-
-	public Usuario(String nombreUsuario, String password, String dni, String nombre, String apellidos, String direccion, String correo, int tipoUsuario) {
+	//Hay 3 tipos, Básica, Trabajador y Premium
+	private String membresia;
+	private Date inicioMembresia;
+	private Date finMembresia;
+	private boolean isMembresiaActiva;
+	private Vehiculo[] listaVehiculos;
+	public Usuario(String nombreUsuario, String password, String dni, String nombre, String apellidos, String direccion, String correo,Vehiculo[] listaVehiculos, int tipoUsuario) {
 		this.nombreUsuario = nombreUsuario;
 		this.password = password;
 		this.dni = dni;
@@ -37,16 +42,17 @@ public class Usuario {
 		this.apellidos = apellidos;
 		this.direccion = direccion;
 		this.correo = correo;
+		this.listaVehiculos = listaVehiculos;
 		this.tipoUsuario = tipoUsuario;
 	}
 
-	private boolean checkUsuario(Usuario usuario){
-		boolean result;
-
-		result = usuario.id != null && usuario.nombreUsuario != null && usuario.password != null && usuario.dni != null && usuario.dni.length() == 9 &&
-				usuario.nombre != null && usuario.apellidos != null && usuario.direccion != null && usuario.correo != null && usuario.tipoUsuario > 0;
-
-		return result;
+	//Default constructor para SingIn para usuario común
+	public Usuario(String dni, String pass, String membresia) {
+		this.dni = dni;
+		this.password = pass;
+		this.tipoUsuario = 2;
+		this.listaVehiculos = new Vehiculo[0];
+		this.membresia = membresia;
 	}
 
 }
