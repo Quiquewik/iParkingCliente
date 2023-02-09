@@ -52,7 +52,7 @@ public class FrmLogin extends JFrame {
 
 		frame = new JFrame();
 
-		frame.setTitle("iParking - Inicio de sesión");
+		frame.setTitle("iParking - Inicio");
 		frame.setBounds(100, 100, 300, 232);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
