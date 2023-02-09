@@ -3,14 +3,12 @@ package cliente.view;
 import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 public class FrmAdminUsuarios {
@@ -20,7 +18,7 @@ public class FrmAdminUsuarios {
 
     private final Usuario user;
 
-    public FrmAdminUsuarios(Usuario user) throws IOException {
+    public FrmAdminUsuarios(Usuario user) {
         createForm();
         this.user = user;
         frmListaDeUsuarios.addWindowListener(new WindowAdapter() {
@@ -39,11 +37,11 @@ public class FrmAdminUsuarios {
     }
 
 
-    private void createForm() throws IOException {
-        frmListaDeUsuarios.setTitle("iParking - Lista de usuarios");
-        frmListaDeUsuarios.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+    private void createForm() {
 
         frmListaDeUsuarios = new JFrame();
+        frmListaDeUsuarios.setTitle("iParking - Lista de usuarios");
+        //frmListaDeUsuarios.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
         frmListaDeUsuarios.setTitle("Lista de usuarios");
         frmListaDeUsuarios.setBounds(100, 100, 700, 500);
         frmListaDeUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

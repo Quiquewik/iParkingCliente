@@ -7,14 +7,12 @@ import cliente.model.Reserva;
 import cliente.model.Usuario;
 import cliente.model.Vehiculo;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -34,16 +32,16 @@ public class FrmParking extends JFrame {
 
     private JButton btnReservar;
 
-    public FrmParking(Usuario user, Parking parking) throws IOException {
+    public FrmParking(Usuario user, Parking parking) {
         setTitle("Parking");
         this.user = user;
         this.parking = parking;
         createForm();
     }
 
-    public void createForm() throws IOException {
+    public void createForm() {
         setTitle("iParking - Lista de parkings y plazas");
-        setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        //setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -265,23 +263,13 @@ public class FrmParking extends JFrame {
         contentPane.add(panelBotones, BorderLayout.SOUTH);
 
         JButton btnEditar = new JButton("Lista reserva");
-        btnEditar.addActionListener(e -> {
-            try {
-                new FrmListaReservas(user, parking);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        btnEditar.addActionListener(e -> new FrmListaReservas(user, parking));
         panelBotones.add(btnEditar);
 
         btnReservar = new JButton("Reservar");
         btnReservar.addActionListener(e -> {
             if (checkReserva()) {
-                try {
-                    new FrmReserva(table.getSelectedRow(), new Reserva(), parking, user, comboVehiculo.getSelectedIndex());
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                new FrmReserva(table.getSelectedRow(), new Reserva(), parking, user, comboVehiculo.getSelectedIndex());
                 comboParkings.setModel(new DefaultComboBoxModel<>(LogicaParking.getNombres()));
             }
         });

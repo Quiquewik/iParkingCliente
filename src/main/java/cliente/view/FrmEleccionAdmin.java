@@ -2,13 +2,11 @@ package cliente.view;
 
 import cliente.model.Usuario;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 public class FrmEleccionAdmin {
@@ -24,10 +22,10 @@ public class FrmEleccionAdmin {
     }
 
 
-    private void createFrom() throws IOException {
+    private void createFrom() {
         frame = new JFrame();
         frame.setTitle("iParking - Menú administrador");
-        frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+       // frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
         frame.setBounds(100, 100, 450, 213);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -71,11 +69,7 @@ public class FrmEleccionAdmin {
         JButton btnDatosUsuarios = new JButton("Gestionar Usuarios");
         btnDatosUsuarios.addActionListener(e -> {
             frame.dispose();
-            try {
-                new FrmAdminUsuarios(user);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            new FrmAdminUsuarios(user);
         });
         panel_1.add(btnDatosUsuarios);
 

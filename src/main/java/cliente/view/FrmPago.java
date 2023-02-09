@@ -4,7 +4,6 @@ import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
 import com.toedter.components.JSpinField;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -12,8 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +44,7 @@ public class FrmPago extends JFrame {
     private JTextField txtNumTarjeta;
     private JTextField txtCCV;
 
-    public FrmPago(Usuario userLogged) throws IOException {
+    public FrmPago(Usuario userLogged) {
         this.userLogged = userLogged;
 
         createForm();
@@ -70,9 +67,9 @@ public class FrmPago extends JFrame {
     /**
      * Create the frame.
      */
-    public void createForm() throws IOException {
+    public void createForm() {
         setTitle("iParking - Pago de membresía");
-        setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        //setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 
         setTitle("Formulario de pago");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -3,7 +3,6 @@ package cliente.view;
 import cliente.logica.LogicaVehiculo;
 import cliente.model.Usuario;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -11,8 +10,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 
 public class FrmListaVehiculos extends JDialog {
 
@@ -23,17 +20,17 @@ public class FrmListaVehiculos extends JDialog {
 
 	private Usuario user;
 
-	public FrmListaVehiculos(Usuario user) throws IOException {
+	public FrmListaVehiculos(Usuario user) {
 		setTitle("Tus vehículos");
 		this.user = user;
 		createForm();
 		
 	}
 	
-	public void createForm() throws IOException {
+	public void createForm() {
 		setModal(true);
 		setTitle("iParking - Lista de vahículos");
-		setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+		//setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -93,24 +90,16 @@ public class FrmListaVehiculos extends JDialog {
 		
 		JButton btnAdd = new JButton("Añadir");
 		btnAdd.addActionListener(e -> {
-			try {
-				new FrmVehiculo(user, table.getSelectedRow(),true);
-				table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			new FrmVehiculo(user, table.getSelectedRow(),true);
+			table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
 		});
 		panelBotones.add(btnAdd);
 		
 		JButton btnEditar = new JButton("Editar");
 		btnEditar.addActionListener(e -> {
-			try {
-				new FrmVehiculo(user, table.getSelectedRow(),false);
-				table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
+			new FrmVehiculo(user, table.getSelectedRow(),false);
+			table.setModel(LogicaVehiculo.getDefaultTableModel(cliente.logica.LogicaUsuario.updateUsuario(user)));
 
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
 		});
 		panelBotones.add(btnEditar);
 		

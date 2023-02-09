@@ -5,14 +5,12 @@ import cliente.model.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 public class FrmPerfil {
@@ -36,17 +34,18 @@ public class FrmPerfil {
         this.userIn = userIn;
         this.isAdmin = isAdmin;
         createForm();
+        rellenarCampos();
+
     }
 
     /**
      * Create the application.
      */
-    public FrmPerfil(Usuario userIn, boolean isAdmin, boolean firstLogging) throws IOException {
+    public FrmPerfil(Usuario userIn, boolean isAdmin, boolean firstLogging)  {
         this.userIn = userIn;
         this.isAdmin = isAdmin;
         if (firstLogging) {
             JOptionPane.showMessageDialog(null, "Por favor rellena los datos para poder usar la applicación correctamente.");
-
         }
         createForm();
         rellenarCampos();
@@ -56,13 +55,13 @@ public class FrmPerfil {
     /**
      * Initialize the contents of the frame.
      */
-    private void createForm() throws IOException {
+    private void createForm() {
 
         controller = new UsuarioController();
 
         frame = new JFrame();
         frame.setTitle("iParking - Información del perfil");
-        frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        //frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
         frame.setTitle("iParking - Menú");
         frame.setBounds(100, 100, 550, 498);
         frame.setResizable(false);
@@ -202,22 +201,12 @@ public class FrmPerfil {
         panel.add(panel_2, BorderLayout.SOUTH);
 
         JButton btnListaVehiculos = new JButton("Lista vehículos");
-        btnListaVehiculos.addActionListener(e -> {
-            try {
-                new FrmListaVehiculos(userIn);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        btnListaVehiculos.addActionListener(e -> new FrmListaVehiculos(userIn));
 
         JButton btnActualizarSuscripcion = new JButton("Actualizar suscripción");
         btnActualizarSuscripcion.addActionListener(e -> {
-            try {
-                new FrmPago(userIn);
-                rellenarCampos();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            new FrmPago(userIn);
+            rellenarCampos();
         });
         panel_2.add(btnActualizarSuscripcion);
         panel_2.add(btnListaVehiculos);

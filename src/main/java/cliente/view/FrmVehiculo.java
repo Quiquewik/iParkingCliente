@@ -4,14 +4,11 @@ import cliente.logica.LogicaUsuario;
 import cliente.model.Usuario;
 import cliente.model.Vehiculo;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 
 public class FrmVehiculo extends JDialog {
 
@@ -27,7 +24,7 @@ public class FrmVehiculo extends JDialog {
     private final Vehiculo vehiculoIn;
 
 
-    public FrmVehiculo(Usuario user, int indexVehiculo, boolean add) throws IOException {
+    public FrmVehiculo(Usuario user, int indexVehiculo, boolean add) {
         this.add = add;
         this.user = user;
         this.indexVehiculo = indexVehiculo;
@@ -39,10 +36,10 @@ public class FrmVehiculo extends JDialog {
     }
 
 
-    public void createFrom() throws IOException {
+    public void createFrom() {
 
         setTitle("iParking - Información del vehículo");
-        setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        //setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
         setModal(true);
 
         addWindowListener(new WindowAdapter() {

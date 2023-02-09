@@ -8,14 +8,11 @@ import cliente.model.Usuario;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.components.JSpinField;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 
 public class FrmReserva extends JDialog {
@@ -40,7 +37,7 @@ public class FrmReserva extends JDialog {
     private final Plaza plaza;
     private final int indexVehiculo;
 
-    public FrmReserva(int indexTabla, Reserva reserva, Parking parking, Usuario user, int indexVehiculo) throws IOException {
+    public FrmReserva(int indexTabla, Reserva reserva, Parking parking, Usuario user, int indexVehiculo)  {
         this.reserva = reserva;
         this.indexTabla = indexTabla;
         this.parking = parking;
@@ -56,10 +53,10 @@ public class FrmReserva extends JDialog {
     /**
      * Create the frame.
      */
-    public void createForm() throws IOException {
+    public void createForm() {
 
         setTitle("iParking - Reserva");
-        setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+        //setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 
         addWindowListener(new WindowAdapter() {
             @Override

@@ -5,14 +5,12 @@ import cliente.model.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 public class FrmLogin extends JFrame {
@@ -24,7 +22,7 @@ public class FrmLogin extends JFrame {
 
     Logger logger = LoggerFactory.getLogger(FrmLogin.class);
 
-    public FrmLogin() throws IOException {
+    public FrmLogin() {
 
 		createForm();
 		frame.addWindowListener(new WindowAdapter() {
@@ -40,7 +38,7 @@ public class FrmLogin extends JFrame {
 		});
 
 
-		frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+		//frame.setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 		frame.setVisible(true);
 
 	}
@@ -139,11 +137,7 @@ public class FrmLogin extends JFrame {
 
                 if (null != usuario.getId()){
 					JOptionPane.showMessageDialog(null,"Usuario creado correctamente.");
-					try {
-						new FrmPerfil(usuario , false, true);
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+					new FrmPerfil(usuario , false, true);
 					frame.dispose();
 				}else{
 					JOptionPane.showMessageDialog(null,"El usuario ya existe.");

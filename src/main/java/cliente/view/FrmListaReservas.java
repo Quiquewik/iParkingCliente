@@ -4,14 +4,11 @@ import cliente.logica.LogicaReserva;
 import cliente.model.Parking;
 import cliente.model.Usuario;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 
 public class FrmListaReservas extends JDialog {
 
@@ -22,7 +19,7 @@ public class FrmListaReservas extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public FrmListaReservas(Usuario user, Parking parking) throws IOException {
+	public FrmListaReservas(Usuario user, Parking parking) {
 		this.user = user;
 		this.parking = parking;
 		createForm();
@@ -32,10 +29,10 @@ public class FrmListaReservas extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public void createForm() throws IOException {
+	public void createForm() {
 		setModal(true);
 		setTitle("iParking - Lista de reservas");
-		setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
+		//setIconImage(new ImageIcon(ImageIO.read(new File("src/main/resources/aparcamiento.png"))).getImage());
 
 		addWindowListener(new WindowAdapter() {
 			@Override
